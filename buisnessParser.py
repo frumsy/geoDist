@@ -1,4 +1,10 @@
 import csv
+from geopy.geocoders import Nominatim
+import time
+
+f = open('agent_name.txt', 'r')
+agent_name = f.read().replace('\n','')
+f.close()
 
 class Loc:
     def __init__(self, latitude, longitude):
@@ -43,8 +49,13 @@ def loadAddresses():
         zipcode = add[4].replace('"', '')        
         buisnesses.append(Buisness(name, street, city, state, zipcode))
         #fullAdd = (buisnesses[len(buisnesses) - 1].getAddress())
-        #print(fullAdd)
-        
+        #print(fullAdd)        
 
-#loadKeyCities()
+loadKeyCities()
 loadAddresses()
+
+geolocator = Nominatim(user_agent=agent_name)
+#print('agent_name: ', agent_name)
+def getCoords(buis):
+               
+
