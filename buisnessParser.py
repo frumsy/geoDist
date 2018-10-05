@@ -32,8 +32,8 @@ def loadKeyCities():
         for row in cityReader:
            keyCities_States.append(row)
     
-    for cs in keyCities_States:
-        print(cs[0] + ', ' + cs[1]) 
+    #for cs in keyCities_States:
+        #print(cs[0] + ', ' + cs[1]) 
 
 def loadAddresses():
     with open('DRT_Upwork.csv', newline='') as csvfile:
@@ -57,5 +57,7 @@ loadAddresses()
 geolocator = Nominatim(user_agent=agent_name)
 #print('agent_name: ', agent_name)
 def getCoords(buis):
-            
+    location = geolocator.geocode(buis.getAddress())            
+    print(buis.name, " [location:",  buis.getAddress(), "]", location)
 
+getCoords(buisnesses[len(buisnesses)-1])
