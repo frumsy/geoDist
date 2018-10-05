@@ -57,5 +57,5 @@ loadAddresses()
 geolocator = Nominatim(user_agent=agent_name)
 #print('agent_name: ', agent_name)
 def getCoords(buis):
-               
+            
 
