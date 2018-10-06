@@ -69,19 +69,24 @@ def cleanAddress(add):
 
 def getCoords(buis):
     add = cleanAddress(buis.getAddress())
-    location = geolocator.geocode(add)            
+    location = geolocator.geocode(add)
     #print(buis.name, " [location:",  buis.getAddress(), "]", location)
     return location
 
 def mapBuisnesses(companies):
     addressByBuisness = {}
+    attemptCount = 0
+    successCount = 0#number of get attempts for getcoords that succeeded
     for b in companies:
+        attemptCount += 1
         b_location = getCoords(b)
         b_coords = None
         if(b_location != None):
-            b_coords = (b_location.latitude, b_location.longitude)    
+            b_coords = (b_location.latitude, b_location.longitude)
+            successCount += 1    
         addressByBuisness[b] = b_coords          
         print(b.toString(), 'coords: ', b_coords)
+        print("attempts: ", attemptCount, " successes:", successCount, " FailCount: ", (attemptCount - successCount))
         time.sleep(1.01)
     return addressByBuisness
 
@@ -93,8 +98,20 @@ def writeBuisnesses(buisnessMap):
     for b, c in buisnessMap.items():#b = buisness, c = coords
         writer.writerow({'buisness': b.toString(), 'coords': c})
     #writer.writerow({'buisnesses': '', 'coords': ''})
-    
+
+def getPercentSuccess(b_map):
+    fails = 0.
+    succ = 0.
+    for b, c in b_map.items():
+        if(c == None):
+            fails += 1
+        else:
+            succ += 1
+    total = fails + succ
+    return (succ/total)
+ 
 addByBuis = mapBuisnesses(testList)
+print("percent success: ", (100*getPercentSuccess(addByBuis)))
 writeBuisnesses(addByBuis)
 #print(len(buisnesses))
 #print(getCoords(buisnesses[len(buisnesses)-1]))
