@@ -1,6 +1,7 @@
 import csv
 from geopy.geocoders import Nominatim
 import time
+import re
 
 f = open('agent_name.txt', 'r')
 agent_name = f.read().replace('\n','')
@@ -62,8 +63,13 @@ for t in testList:
 
 geolocator = Nominatim(user_agent=agent_name)
 #print('agent_name: ', agent_name)
+
+def cleanAddress(add):
+    return re.sub('^(\s)*((LLC)|(Inc))*(\.*,*)*(\s)*', '', add)
+
 def getCoords(buis):
-    location = geolocator.geocode(buis.getAddress())            
+    add = cleanAddress(buis.getAddress())
+    location = geolocator.geocode(add)            
     #print(buis.name, " [location:",  buis.getAddress(), "]", location)
     return location
 
