@@ -84,7 +84,9 @@ def mapBuisnesses(companies):
         if(b_location != None):
             b_coords = (b_location.latitude, b_location.longitude)
             successCount += 1    
-        addressByBuisness[b] = b_coords          
+        addressByBuisness[b] = b_coords
+        if(attemptCount > 0 and attemptCount % 500 == 0):
+            writeBuisnesses(addressByBuisness)          
         print(b.toString(), 'coords: ', b_coords)
         print("attempts: ", attemptCount, " successes:", successCount, " FailCount: ", (attemptCount - successCount))
         time.sleep(1.01)
@@ -110,7 +112,7 @@ def getPercentSuccess(b_map):
     total = fails + succ
     return (succ/total)
  
-addByBuis = mapBuisnesses(testList)
+addByBuis = mapBuisnesses(buisnesses)
 print("percent success: ", (100*getPercentSuccess(addByBuis)))
 writeBuisnesses(addByBuis)
 #print(len(buisnesses))
