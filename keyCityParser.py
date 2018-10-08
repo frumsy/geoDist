@@ -27,11 +27,21 @@ def getCoords(city):
 
 def mapKeyCities(cities):    
     citiesToCoords = {}
+    index = 0
     for c in cities:
+        index += 1
         loc = getCoords(c)
-        citiesToCoords[c] = loc
-        time.sleep(1.01)
-        print(c, loc)
+        cityStateString = c[0] + ', ' +c[1]
+        if(loc != None):
+            citiesToCoords[cityStateString] = (loc.latitude, loc.longitude)
+            print(index, cityStateString, (loc.latitude, loc.longitude))
+        else:
+            citiesToCoords[cityStateString] = None
+            print(cityStateString, "None", index)
+        if(index > 1 and index%50 == 0):
+            print("writing",index,"cities.")
+            writeCoords(citiesToCoords)
+        time.sleep(1.1)
     return citiesToCoords
 
 #print(keyCities)
@@ -41,8 +51,8 @@ def writeCoords(citiesMap):
         fieldnames = ['city_state', 'coords']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-        for loc, coord in buisnessMap.items():
+        for loc, coord in citiesMap.items():
             writer.writerow({'city_state': loc, 'coords': coord})
 
-keyCityMap = mapKeyCities()
+keyCityMap = mapKeyCities(keyCities)
 writeCoords(keyCityMap)
