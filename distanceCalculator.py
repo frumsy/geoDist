@@ -1,4 +1,5 @@
 import csv
+from commonregex import CommonRegex
 from geopy.geocoders import Nominatim
 import geopy.distance
 import time
@@ -46,7 +47,8 @@ def getDistance(c1, c2):
     return geopy.distance.distance(c1,c2).km
 
 def getState(s):#gets the state from a string of syntax "state zipcode"
-    return s.split(' ')[1]
+    parse_text = CommonRegex(s)
+    return parse_text.street_address
 
 def getZipcode(s):
     return s.split(' ')[2][:-1]#the [:-1] deletes the last character because there is a " at the end of the zip in the csv file for each line.
@@ -61,14 +63,46 @@ def cleanState(state):
 def onlyIn(keyCitiesList, state):#filters list by state
     citiesByState = [] 
     for c in keyCitiesList:
-        print(cleanState(cleanState(c[1])))
+        #print(cleanState(cleanState(c[1])))
         if(cleanState(c[1]) == state):
             print(c)
             citiesByState.append(c)
     return citiesByState
 
-for x in keyCities:
-    print(len(x),x)
+def cleanCoords(coord):
+    return float(re.findall(r"[-+]?\d*\.\d+|\d+", coord)[0])
+
+def getClosestKeyCity(b, cits):#b = buisness, cits = keyCities
+    state = getState(b[2])
+    #print(cits)
+    #print(b, b[2])
+    #print(state)
+    citiesInState = onlyIn(cits, state) 
+    closest = citiesInState[0]
+    smallest_dist = 100000000000
+    #print(citiesInState)
+    for c in citiesInState:
+        if(len(b) == 5):
+            #print("DEBUG:",'c:',c[2],c[3],"b:", b[3],b[4])
+            b_lat = cleanCoords(b[3])
+            b_long = cleanCoords(b[4])
+            c_lat = cleanCoords(c[2])
+            c_long = cleanCoords(c[3])
+            dist = getDistance( (c_lat, c_long), (b_lat, b_long) )
+            if(dist < smallest_dist):
+                closest = c
+                smallest_dist = dist
+        else:
+            print("no coords",len(b),b)
+    return closest
+
+closestCityToBuisness = {}
+for b in buisnesses[1:]:
+    close = getClosestKeyCity(b, keyCities)
+    closestCityToBuisness[b] = close
+
+#for x in keyCities:
+#    print(len(x),x)
 #for x in buisnesses[1:]:
 #    print(len(x), x)
 #    print(getState(x[2]),'ZIP: ' ,getZipcode(x[2]))
