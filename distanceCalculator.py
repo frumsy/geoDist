@@ -1,5 +1,4 @@
 import csv
-from commonregex import CommonRegex
 from geopy.geocoders import Nominatim
 import geopy.distance
 import time
@@ -24,7 +23,7 @@ class Buisness:
     def getAddress(self):
         return (self.street + ', ' + self.city + ', ' + self.state + ' ' + self.zipcode)
     def toString(self):
-        return (self.name + ': ' + self.getAddress())
+        return (self.name + ':' + self.getAddress())
 
 
 def readBuisnesses(fileName):
@@ -36,10 +35,24 @@ def readBuisnesses(fileName):
     return bs
 
 def parseBuisness(bs):
-    name = bs.split(':')[0]
-    street, city, state_and_zip = bs.split(':')[1].split(',')
-    empty, state, zipcode = state_and_zip.split(' ')
-    return Buisness(name, street, city, state, zipcode))
+    print("debug: ",bs)
+    name = bs[0].split(':')[0]
+    street = bs[0].split(':')[1].split(',')[0]
+    city = bs[0].split(':')[1].split(',')[1]
+    state_and_zip = bs[0].split(':')[1].split(',')[2]
+    lst = state_and_zip.split(' ')
+    state = [word for word in lst if len(word) == 2].pop()
+    zipcode = [word for word in lst if len(word) == 5]
+    if(len(zipcode)==0):
+        zipcode = ''
+    else:
+        zipcode = zipcode[0]
+    print('name',name)
+    print('street',street)
+    print('city',city)
+    print('state',state)
+    print('zip',zipcode)
+    return Buisness(name, street, city, state, zipcode)
 
 def loadBuisnesses(fileName):
     coordsByBuis = {}
