@@ -30,15 +30,30 @@ class Buisness:
 def readBuisnesses(fileName):
     bs = []
     with open(fileName, 'r', newline='') as csvfile:
-        addressReader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        addressReader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in addressReader:
             bs.append(row)
     return bs
 
+def parseBuisness(bs):
+    name = bs.split(':')[0]
+    street, city, state_and_zip = bs.split(':')[1].split(',')
+    empty, state, zipcode = state_and_zip.split(' ')
+    return Buisness(name, street, city, state, zipcode))
+
+def loadBuisnesses(fileName):
+    coordsByBuis = {}
+    #buisnesses = []
+    bs_and_coords = readBuisnesses(fileName)
+    for row in bs_and_coords:
+        #print(len(row),row)
+        coordsByBuis[row[0]] = row[1]
+    return coordsByBuis
+
 def readKeyCities(fileName):
     kc = []
     with open(fileName, 'r', newline='') as csvfile:
-        addressReader = csv.reader(csvfile, delimiter=',', quotechar='|')
+        addressReader = csv.reader(csvfile, delimiter=',', quotechar='"')
         for row in addressReader:
             kc.append(row)
     return kc
@@ -46,14 +61,16 @@ def readKeyCities(fileName):
 def getDistance(c1, c2):
     return geopy.distance.distance(c1,c2).km
 
-def getState(s):#gets the state from a string of syntax "state zipcode"
-    parse_text = CommonRegex(s)
-    return parse_text.street_address
+def getState(s):
+    pass
 
 def getZipcode(s):
-    return s.split(' ')[2][:-1]#the [:-1] deletes the last character because there is a " at the end of the zip in the csv file for each line.
-buisnesses = readBuisnesses('TestBuisnessMap.csv')
-keyCities = readKeyCities('CitiesWithCoords.csv')
+    pasis
+
+
+#buisnesses = readBuisnesses('TestBuisnessMap.csv')
+#keyCities = readKeyCities('CitiesWithCoords.csv')
+
 #filter each buisness by city it's in 
 #calculate distance to closets city
 
@@ -69,8 +86,6 @@ def onlyIn(keyCitiesList, state):#filters list by state
             citiesByState.append(c)
     return citiesByState
 
-def cleanCoords(coord):
-    return float(re.findall(r"[-+]?\d*\.\d+|\d+", coord)[0])
 
 def getClosestKeyCity(b, cits):#b = buisness, cits = keyCities
     state = getState(b[2])
@@ -95,11 +110,13 @@ def getClosestKeyCity(b, cits):#b = buisness, cits = keyCities
         else:
             print("no coords",len(b),b)
     return closest
-
+"""
 closestCityToBuisness = {}
 for b in buisnesses[1:]:
     close = getClosestKeyCity(b, keyCities)
     closestCityToBuisness[b] = close
+
+"""
 
 #for x in keyCities:
 #    print(len(x),x)
