@@ -61,7 +61,7 @@ def onlyIn(lst, state):#filters lst of keyCities by state
     return newList
 
 def writeBuisnesses(buisnessMap):
-    with open('finalcityMap.csv', 'w', newline='') as csvfile:
+    with open('buisnessMap.csv', 'w', newline='') as csvfile:
         fieldnames = ['buisness', 'city']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -73,16 +73,28 @@ def writeBuisnesses(buisnessMap):
 loadBuisnesses()
 keyCities = readKeyCities('CitiesWithCoords.csv')[1:]
 cityToBuisness = {}
-for b in buisnesses:
-    if(b.location=='' or b.location == ' '):
-        pass
-    else:
-        stateCities = onlyIn(keyCities, b.state)
-        if(len(stateCities) > 0):
-            distances = [(getDistance(b.location,c[1]),c) for c in stateCities]
-            closeCityState = min(distances,key=lambda item:item[0])[1]
-            closestCity = closeCityState[0].split(', ')[0]
-            cityToBuisness[b] = closestCity
-            #print(closestCity)
+def findClosestCities(bs):
+    for b in bs:
+        if(b.location=='' or b.location == ' '):
+            print('no coords:', b.toString())
+            cityToBuisness[b] = ''
+        else:
+            stateCities = onlyIn(keyCities, b.state)
+            if(len(stateCities) > 0):
+                distances = [(getDistance(b.location,c[1]),c) for c in stateCities]
+                closeCityState = min(distances,key=lambda item:item[0])[1]
+                closestCity = closeCityState[0].split(', ')[0]
+                cityToBuisness[b] = closestCity
+                #print(closestCity)
+            else:
+                print(b.state)
+                cityToBuisness[b] = ''
 
-#writeBuisnesses(cityToBuisness)
+#for i,x in enumerate(buisnesses):
+#    if(x.state == 'HI'):
+#        print(i)
+
+#fromId = 3781
+#print(len(buisnesses[fromId:]), buisnesses[fromId:][0].toString())
+findClosestCities(buisnesses)
+writeBuisnesses(cityToBuisness)
